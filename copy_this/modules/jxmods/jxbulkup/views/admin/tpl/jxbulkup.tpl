@@ -166,9 +166,9 @@
                                     <input type="text" name="jx_updval_min" size="2" value="[{ $jx_updval_min }]"> bis 
                                     <input type="text" name="jx_updval_max" size="2" value="[{ $jx_updval_max }]">
                                     <select name="jx_updval_unit" id="jx_updval_unit" size="1">
-                                        <option value="DAY" [{if $jx_updval_unit == "DAY"}]selected[{/if}]>Tage</option>
-                                        <option value="WEEK" [{if $jx_updval_unit == "WEEK"}]selected[{/if}]>Wochen</option>
-                                        <option value="MONTH" [{if $jx_updval_unit == "MONTH"}]selected[{/if}]>Monate</option>
+                                        <option value="DAY" [{if $jx_updval_unit == "DAY"}]selected[{/if}]>[{ oxmultilang ident="JXBULKUP_DELTIME_DAYS" }]</option>
+                                        <option value="WEEK" [{if $jx_updval_unit == "WEEK"}]selected[{/if}]>[{ oxmultilang ident="JXBULKUP_DELTIME_WEEKS" }]</option>
+                                        <option value="MONTH" [{if $jx_updval_unit == "MONTH"}]selected[{/if}]>[{ oxmultilang ident="JXBULKUP_DELTIME_MONTHS" }]</option>
                                     </select>
                                 </td>
                             [{elseif $jx_updfield == "oxremind"}]
@@ -178,6 +178,15 @@
                                            onchange="if (this.checked) document.forms.jxbulkup_update.jx_updval_min.disabled=false; else document.forms.jxbulkup_update.jx_updval_min.disabled=true;"> 
                                     <label for="jx_updaval_remind">[{ oxmultilang ident="JXBULKUP_REMINDER" }]</label><br>
                                     [{ oxmultilang ident="JXBULKUP_MIN" }] <input type="text" id="jx_updval_min" name="jx_updval_min" size="2" value="[{ $jx_updval_min }]" [{if $jx_updval_remind!="jx_updval_remind"}]disabled="disabled"[{/if}]> [{ oxmultilang ident="GENERAL_ITEM" }]
+                                </td>
+                            [{elseif $jx_updfield == "oxprice"}]
+                                <td valign="top"><nobr>[{ oxmultilang ident="JXBULKUP_NEWVALUES" }]:</nobr></td>
+                                <td valign="top">
+                                    <input type="text" name="jx_updval" size="5" value="[{ $jx_updval }]"> &nbsp; 
+                                    <select name="jx_updval_mode" id="jx_updval_mode" size="1">
+                                        <option value="ABS" [{if $jx_updval_mode == "ABS"}]selected[{/if}]>[{ oxmultilang ident="JXBULKUP_PRICE_ABS" }]</option>
+                                        <option value="PERC" [{if $jx_updval_mode == "PERC"}]selected[{/if}]>[{ oxmultilang ident="JXBULKUP_PRICE_PERC" }]</option>
+                                    </select>
                                 </td>
                             [{else}]
                                 <td valign="top"><nobr>[{ oxmultilang ident="JXBULKUP_NEWVALUE" }]:</nobr></td>
@@ -201,6 +210,13 @@
                                 <td>
                                     <input type="radio" id="overwrite" name="jx_updmode" value="OVERWRITE" [{if $jx_updmode=="OVERWRITE"}]checked="checked"[{/if}] onchange="document.forms.jxbulkup_update.btntest.disabled=false"> 
                                     <label for="overwrite">[{ oxmultilang ident="JXBULKUP_OVERWRITE" }]</label><br />
+                                </td>
+                            [{elseif $jx_updfield == "oxprice"}]
+                                <td>
+                                    <input type="radio" id="increase" name="jx_updmode" value="INCREASE" [{if $jx_updmode=="INCREASE"}]checked="checked"[{/if}] onchange="document.forms.jxbulkup_update.btntest.disabled=false"> 
+                                    <label for="increase">[{ oxmultilang ident="JXBULKUP_INCREASE" }]</label><br />
+                                    <input type="radio" id="decrease" name="jx_updmode" value="DECREASE" [{if $jx_updmode=="DECREASE"}]checked="checked"[{/if}] onchange="document.forms.jxbulkup_update.btntest.disabled=false"> 
+                                    <label for="decrease">[{ oxmultilang ident="JXBULKUP_DECREASE" }]</label><br />
                                 </td>
                             [{else}]
                                 <td>
@@ -285,8 +301,8 @@
                         [{ oxmultilang ident="JXBULKUP_STOCKREMINDER" }]
                     [{elseif $jx_updfield=="jxattributes"}]
                         [{ oxmultilang ident="JXBULKUP_ATTRIBUTE" }]
-                    [{elseif $jx_updfield=="jxattributes"}]
-                        [{ oxmultilang ident="JXBULKUP_ATTRIBUTE" }]
+                    [{elseif $jx_updfield=="oxprice"}]
+                        [{ oxmultilang ident="GENERAL_PRICE" }]
                     [{/if}]
 
                     [{if $sStep=="testUpdate"}] <span style="font-weight:bold;color:blue;">-[{ oxmultilang ident="JXBULKUP_PREVIEW" }]-</span>[{/if}]
@@ -306,8 +322,7 @@
                 [{if $jx_incvars=="jx_incvars"}]
                     <td class="[{ $listclass }]">&nbsp;[{ $Product.oxvarselect }]</td>
                 [{/if}]
-                [{*<td class="[{ $listclass }]">&nbsp;<span style="font-weight:bold;[{if $sStep=="testUpdate"}]color:blue;[{/if}]">[{ $Product.updfield }]</span></td>*}]
-                <td class="[{ $listclass }]" style="font-weight:bold;">&nbsp;[{ $Product.updfield }]</td>
+                <td class="[{ $listclass }]" style="font-weight:bold;[{if $jx_updfield=="oxprice"}]text-align:right; padding-right:60px;[{if $sStep=="testUpdate"}]color:blue;[{/if}][{/if}]" >&nbsp;[{ $Product.updfield }]</td>
             </tr>
         [{/foreach}]
     </table>

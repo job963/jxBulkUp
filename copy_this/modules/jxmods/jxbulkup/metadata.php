@@ -19,14 +19,14 @@ $aModule = array(
     'version'      => '0.1',
     'author'       => 'Joachim Barthel',
     'url'          => 'https://github.com/job963/jxBulkUp',
-    'email'        => 'jbarthel@qualifire.de',
+    'email'        => 'jobarthel@gmail.com',
     'extend'       => array(
                         ),
     'files'        => array(
-        'jxbulkup'     => 'jxbulkup/application/controllers/admin/jxbulkup.php'
+        'jxbulkup'     => 'jxmods/jxbulkup/application/controllers/admin/jxbulkup.php'
                         ),
     'templates'    => array(
-        'jxbulkup.tpl' => 'jxbulkup/views/admin/tpl/jxbulkup.tpl'
+        'jxbulkup.tpl' => 'jxmods/jxbulkup/views/admin/tpl/jxbulkup.tpl'
                         ),
 /*    'events'       => array(
         'onActivate'   => 'install_jxinventory::onActivate', 
