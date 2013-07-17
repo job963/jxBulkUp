@@ -166,7 +166,7 @@ class jxbulkup extends oxAdminView
         print_r($aProducts);
         echo '</pre>'; /* */
 
-        echo "sUpdateField=".$sUpdateField;
+        //echo "sUpdateField=".$sUpdateField;
         //strpos(' oxlongdesc oxtags', $sUpdateField)>0
         //if ($sUpdateField == 'a.oxprice') {
         if ( strpos($sUpdateField,'oxprice') > 0 ) {
@@ -192,7 +192,7 @@ class jxbulkup extends oxAdminView
         $sActive = oxConfig::getParameter( 'jx_active' );
         $sIncVars = oxConfig::getParameter( 'jx_incvars' );
         
-        if (strpos(' oxartnum oxtitle oxshortdesc oxsearchkeys', $sUpdateField) > 0)
+        if (strpos(' oxartnum oxtitle oxshortdesc oxsearchkeys oxprice', $sUpdateField) > 0)
             $sUpdateTable = 'oxarticles';
         else if (strpos(' oxlongdesc oxtags', $sUpdateField) > 0)
             $sUpdateTable = 'oxartextends';
@@ -352,6 +352,7 @@ class jxbulkup extends oxAdminView
         $sAttribute = oxConfig::getParameter( 'jx_attribute' );
         $sExchangeValue = oxConfig::getParameter( 'jx_exchval' );
         $sUpdateMode = oxConfig::getParameter( 'jx_updmode' );
+        $sUpdateValMode = oxConfig::getParameter( 'jx_updval_mode' );
         
         if (strpos(' oxdeltime', $sUpdateField) > 0) {
             $sUpdateValue = array();
@@ -375,7 +376,7 @@ class jxbulkup extends oxAdminView
         
         if (empty($sUpdateField))
             $sUpdateField = "''";
-        else if (strpos(' oxartnum oxtitle oxshortdesc oxsearchkeys', $sUpdateField)>0)
+        else if (strpos(' oxartnum oxtitle oxshortdesc oxsearchkeys oxprice', $sUpdateField)>0)
             $sUpdateField = 'oxarticles.' . $sUpdateField;
         else if (strpos(' oxlongdesc oxtags', $sUpdateField)>0)
             $sUpdateField = 'oxartextends.' . $sUpdateField;
@@ -384,7 +385,7 @@ class jxbulkup extends oxAdminView
         else if (strpos(' oxremind', $sUpdateField)>0)
             $sUpdateField = "IF(a.oxremindactive=1,CONCAT('aktiv, mind. ',a.oxremindamount),'inaktiv')";*/
         else if (strpos(' jxattributes', $sUpdateField)>0)
-            $sUpdateField = "(SELECT v.oxvalue FROM oxobject2attribute v WHERE oxobjectid=a.oxid AND oxattrid='$sAttribute' )";
+            $sUpdateField = ""; // "(SELECT v.oxvalue FROM oxobject2attribute v WHERE oxobjectid=a.oxid AND oxattrid='$sAttribute' )";
 
         switch ($sUpdateMode) {
             case 'PREFIX':
@@ -406,6 +407,18 @@ class jxbulkup extends oxAdminView
                                 . "oxarticles.oxremindamount={$sUpdateValue[1]} ";
                 else
                     $sUpdateSet = "$sUpdateField = '{$sUpdateValue}' ";
+                break;
+            case 'INCREASE':
+                if ($sUpdateValMode == 'ABS')
+                    $sUpdateSet = "$sUpdateField = $sUpdateField+$sUpdateValue";
+                else // PERC
+                    $sUpdateSet = "$sUpdateField = $sUpdateField*(100.0+$sUpdateValue)/100.0";
+                break;
+            case 'DECREASE':
+                if ($sUpdateValMode == 'ABS')
+                    $sUpdateSet = "$sUpdateField = $sUpdateField-$sUpdateValue";
+                else // PERC
+                    $sUpdateSet = "$sUpdateField = $sUpdateField*(100.0-$sUpdateValue)/100.0";
                 break;
         }
         echo '<pre>'.$sUpdateField.'/'.$sUpdateSet.'</pre>';

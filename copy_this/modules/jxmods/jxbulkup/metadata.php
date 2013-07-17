@@ -12,8 +12,8 @@ $aModule = array(
     'id'           => 'jxbulkup',
     'title'        => 'jxBulkUp - Bulk Update Tool for Products',
     'description'  => array(
-                        'de'=>'Verwaltung des tats&auml;chlichen Lagerbestand.',
-                        'en'=>'Administration of the real inventory.'
+                        'de'=>'Massen-Aktualisierung von Artikeln',
+                        'en'=>'Bulk Update of Products'
                         ),
     'thumbnail'    => 'jxbulkup.png',
     'version'      => '0.1',
