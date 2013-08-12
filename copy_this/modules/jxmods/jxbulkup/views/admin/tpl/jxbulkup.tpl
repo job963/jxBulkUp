@@ -86,7 +86,9 @@
                 </form>
             </td>
 
-            <td></td>
+            <td>
+                [{* ---------------------------------------------------------------------------------------------------------------------------- *}]
+            </td>
 
             <td width="32%" valign="top" style="border:[{if $sStep=="searchProducts"}]1px solid #666;[{else}]1px solid #bbb;background-color:#f7f7f7;[{/if}]padding:4px; height:100%">
                 <form name="jxbulkup_display" id="jxbulkup_display" action="[{ $shop->selflink }]" method="post">
@@ -142,7 +144,9 @@
                 </form>
             </td>
 
-            <td></td>
+            <td>
+                [{* ---------------------------------------------------------------------------------------------------------------------------- *}]
+            </td>
 
             <td width="33%" valign="top" style="border:[{if $sStep=="displayUpdateField"||$sStep=="testUpdate"}]1px solid #666;[{else}]1px solid #bbb;background-color:#f7f7f7;[{/if}]padding:4px; height:100%">
                 <form name="jxbulkup_update" id="jxbulkup_update" action="[{ $shop->selflink }]" method="post">
@@ -196,7 +200,7 @@
                                 <input type="submit" id="btntest" value=" [{ oxmultilang ident="JXBULKUP_TESTBTN" }] " [{if $jx_updmode==""}]disabled[{/if}] style="width:100%;"
                                        onclick="document.forms.jxbulkup_update.step.value='testUpdate';document.forms.jxbulkup_update.submit;"><br />
                                 <input type="submit" id="btnupdate" value=" [{ oxmultilang ident="JXBULKUP_UPDATEBTN" }] " [{if $sStep!="testUpdate"}]disabled[{/if}] style="width:100%;"
-                                       onclick="document.forms.jxbulkup_update.step.value='executeUpdate';document.forms.jxbulkup_update.submit;">
+                                       onclick="if (confirm('[{ oxmultilang ident="JXBULKUP_CONFIRMUPDATE" }]')) {document.forms.jxbulkup_update.step.value='executeUpdate';document.forms.jxbulkup_update.submit;} else {document.forms.jxbulkup_update.step.value='testUpdate';document.forms.jxbulkup_update.submit;}">
                             </td>
                         </tr>
                         <tr>
@@ -233,6 +237,11 @@
                                     <input type="radio" id="overwrite" name="jx_updmode" value="OVERWRITE" [{if $jx_updmode=="OVERWRITE"}]checked="checked"[{/if}] 
                                            onchange="document.forms.jxbulkup_update.jx_exchval.disabled=true;document.forms.jxbulkup_update.btntest.disabled=false">  
                                     <label for="overwrite">[{ oxmultilang ident="JXBULKUP_OVERWRITE" }]</label><br />
+                                    [{if $jx_updfield == "jxattributes"}]
+                                        <input type="radio" id="create" name="jx_updmode" value="CREATE" [{if $jx_updmode=="CREATE"}]checked="checked"[{/if}] 
+                                               onchange="document.forms.jxbulkup_update.jx_exchval.disabled=true;document.forms.jxbulkup_update.btntest.disabled=false">  
+                                        <label for="create">[{ oxmultilang ident="JXBULKUP_CREATE" }]</label><br />
+                                    [{/if}]
                                 </td>
                             [{/if}]
                             <td> </td>

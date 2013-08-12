@@ -1,7 +1,7 @@
 <?php
 
 /*
- *    This file is part of the module jxExcptns for OXID eShop Community Edition.
+ *    This file is part of the module jxBulkUp for OXID eShop Community Edition.
  *
  *    The module OxProbs for OXID eShop Community Edition is free software: you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  *    You should have received a copy of the GNU General Public License
  *    along with OXID eShop Community Edition.  If not, see <http://www.gnu.org/licenses/>.
  *
- * @link      https://github.com/job963/jxExcptns
+ * @link      https://github.com/job963/jxBulkUp
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GPL v3 or later
  * @copyright (C) Joachim Barthel 2012-2013
  *
@@ -191,6 +191,8 @@ class jxbulkup extends oxAdminView
         $sUpdateMode = oxConfig::getParameter( 'jx_updmode' );
         $sActive = oxConfig::getParameter( 'jx_active' );
         $sIncVars = oxConfig::getParameter( 'jx_incvars' );
+        $sAttributeId = oxConfig::getParameter( 'jx_attribute' );
+
         
         if (strpos(' oxartnum oxtitle oxshortdesc oxsearchkeys oxprice', $sUpdateField) > 0)
             $sUpdateTable = 'oxarticles';
@@ -209,7 +211,38 @@ class jxbulkup extends oxAdminView
         if (empty($sIncVars))
             $sWhere .= "AND oxarticles.oxparentid = '' ";
         
-        $sSql = "UPDATE $sUpdateTable "
+        if (strpos(' jxattributes', $sUpdateField) > 0) 
+            switch ($sUpdateMode) {
+                case 'PREFIX':
+                    $sSql = "UPDATE";
+                    break;
+                case 'POSTFIX':
+                    $sSql = "UPDATE";
+                    break;
+                case 'REPLACE':
+                    $sSql = "UPDATE";
+                    break;
+                case 'OVERWRITE':
+                    $sSql = "UPDATE";
+                    $sSql2 = "INSERT";
+                    break;
+                case 'CREATE':
+                    $sSql = "INSERT INTO oxobject2attribute (oxid, oxobjectid, oxattrid, oxvalue, oxpos) "
+                            . "SELECT REPLACE(UUID(),'-',''), a.oxid, '$sAttributeId', '$sUpdateValue', 0 FROM oxarticles a, oxartextends e "
+                                . "WHERE "
+                                    . "(UPPER(a.oxartnum) LIKE '$sSrcVal%' "
+                                        . "OR IF(a.oxparentid='',UPPER(a.oxtitle), (SELECT UPPER(b.oxtitle) FROM oxarticles b WHERE a.oxparentid=b.oxid)) LIKE '$sSrcVal%' "
+                                        . "OR UPPER(a.oxvarselect) LIKE '$sSrcVal%' "
+                                        . "OR UPPER(a.oxsearchkeys) LIKE '$sSrcVal%' "
+                                        . "OR a.oxean LIKE '$sSrcVal%') "
+                                    . "AND (SELECT v.oxvalue FROM oxobject2attribute v WHERE v.oxobjectid=a.oxid AND v.oxattrid='8a142c3f14ef22a14.79693851') IS NULL "
+                                    . "AND a.oxid = e.oxid "
+                                    . $sWhere;
+                                //. "ORDER BY IF(a.oxparentid='',a.oxtitle, (SELECT b.oxtitle FROM oxarticles b WHERE a.oxparentid=b.oxid)), a.oxvarselect ";
+                    break;
+            }
+        else
+            $sSql = "UPDATE $sUpdateTable "
                 . "SET $sUpdateFields "
                 . "WHERE ("
                         . "UPPER(oxarticles.oxartnum) LIKE '%$sSrcVal%' "
@@ -249,6 +282,7 @@ class jxbulkup extends oxAdminView
     {
         $sUpdateField = oxConfig::getParameter( 'jx_updfield' );
         $sAttribute = oxConfig::getParameter( 'jx_attribute' );
+        $sUpdateMode = oxConfig::getParameter( 'jx_updmode' );
         $myConfig = oxRegistry::get("oxConfig");
         $oCurrency = $myConfig->getActShopCurrencyObject();
         $sCurrency = $oCurrency->sign;
@@ -271,8 +305,15 @@ class jxbulkup extends oxAdminView
             $sTransMinimum = oxLang::getInstance()->translateString('JXBULKUP_MINIMUM' );
             $sUpdateField = "IF(a.oxremindactive=1,CONCAT('{$sTransActive}, {$sTransMinimum} ',a.oxremindamount),'{$sTransInactive}')";
         }
-        else if (strpos(' jxattributes', $sUpdateField) > 0)
-            $sUpdateField = "(SELECT v.oxvalue FROM oxobject2attribute v WHERE oxobjectid=a.oxid AND oxattrid='$sAttribute' )";
+        else if (strpos(' jxattributes', $sUpdateField) > 0) {
+            if ($sUpdateMode == 'CREATE')
+                $sUpdateField = "IF((SELECT v.oxvalue FROM oxobject2attribute v WHERE oxobjectid=a.oxid AND oxattrid='$sAttribute') IS NULL, "
+                                . "'@CREATE@', "
+                                . "(SELECT v.oxvalue FROM oxobject2attribute v WHERE oxobjectid=a.oxid AND oxattrid='$sAttribute')"
+                                . ")";
+            else
+                $sUpdateField = "(SELECT v.oxvalue FROM oxobject2attribute v WHERE oxobjectid=a.oxid AND oxattrid='$sAttribute')";
+        }
         else if (strpos(' oxprice', $sUpdateField) > 0) 
             $sUpdateField = 'a.' . $sUpdateField;
         
@@ -320,6 +361,9 @@ class jxbulkup extends oxAdminView
                 break;
             case 'OVERWRITE':
                 $sUpdateField = "'<span style=\"color:blue;\">{$sUpdateValue}</span>'";
+                break;
+            case 'CREATE':
+                $sUpdateField = str_replace("@CREATE@", "<span style=\"color:blue;\">{$sUpdateValue}</span>", $sUpdateField);
                 break;
             case 'INCREASE':
                 if ($sUpdateValMode == 'ABS')
@@ -370,6 +414,9 @@ class jxbulkup extends oxAdminView
                 $sUpdateValue[0] = '0';
                 $sUpdateValue[1] = '0';
             }
+        }
+        elseif (strpos(' jxattributes', $sUpdateField) > 0) {
+            $sAttrId = oxConfig::getParameter( 'jx_attribute' );
         }
         else
             $sUpdateValue = mysql_real_escape_string( oxConfig::getParameter( 'jx_updval' ) );

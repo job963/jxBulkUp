@@ -35,10 +35,12 @@ $aLang = array(
     'JXBULKUP_POSTFIX'          => 'Anh&auml;ngen',
     'JXBULKUP_REPLACE'          => 'Ersetzen von',
     'JXBULKUP_OVERWRITE'        => '&Uuml;berschreiben',
+    'JXBULKUP_CREATE'           => 'Neu anlegen',
     'JXBULKUP_INCREASE'         => 'Erh&ouml;hen',
     'JXBULKUP_DECREASE'         => 'Reduzieren',
     'JXBULKUP_TESTBTN'          => 'Test',
     'JXBULKUP_UPDATEBTN'        => 'Update',
+    'JXBULKUP_CONFIRMUPDATE'    => 'M&ouml;chten sie die Werte wirklich updaten?',
     
     'JXBULKUP_ACTIVE'           => 'aktiv',
     'JXBULKUP_INACTIVE'         => 'inaktiv',
